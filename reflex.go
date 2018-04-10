@@ -284,6 +284,8 @@ func (r *Reflex) runCommand(name string, stdout chan<- OutMsg) {
 		err := cmd.Wait()
 		if !r.Killed() && err != nil {
 			stdout <- OutMsg{r.id, fmt.Sprintf("(error exit: %s)", err)}
+			// If the service dies, exit with error
+			os.Exit(1)
 		}
 		r.done <- struct{}{}
 		if flagSequential {
