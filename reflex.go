@@ -282,8 +282,12 @@ func (r *Reflex) runCommand(name string, stdout chan<- OutMsg) {
 	r.mu.Unlock()
 	go func() {
 		err := cmd.Wait()
-		if !r.Killed() && err != nil {
-			stdout <- OutMsg{r.id, fmt.Sprintf("(error exit: %s)", err)}
+		if !r.Killed() {
+			if err != nil {
+				stdout <- OutMsg{r.id, fmt.Sprintf("(error exit: %s)", err)}
+			} else {
+				stdout <- OutMsg{r.id, fmt.Sprintf("process exited unexpectedly", err)}
+			}
 			// If the service dies, exit with error
 			os.Exit(1)
 		}
